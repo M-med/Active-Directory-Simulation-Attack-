@@ -1,0 +1,76 @@
+<Sysmon schemaversion="4.90">
+  <!-- Sysmon configuration for Purple Team Lab -->
+  <!-- Based on SwiftOnSecurity and Olaf Hartong's configs -->
+
+  <HashAlgorithms>md5,sha256,IMPHASH</HashAlgorithms>
+  <CheckRevocation>false</CheckRevocation>
+  <DnsLookup>false</DnsLookup>
+
+  <EventFiltering>
+
+    <!-- ============================================== -->
+    <!-- Event ID 1: Process Creation                   -->
+    <!-- ============================================== -->
+    <ProcessCreate onmatch="include">
+      <!-- Suspicious processes -->
+      <Image condition="contains">psexec</Image>
+      <Image condition="contains">mimikatz</Image>
+      <Image condition="contains">bloodhound</Image>
+      <Image condition="contains">sharphound</Image>
+      <Image condition="contains">powershell.exe</Image>
+      <Image condition="contains">cmd.exe</Image>
+      <Image condition="contains">wmic.exe</Image>
+      <Image condition="contains">net.exe</Image>
+      <Image condition="contains">net1.exe</Image>
+      <Image condition="contains">whoami.exe</Image>
+      <Image condition="contains">nltest.exe</Image>
+      <Image condition="contains">klist.exe</Image>
+      <Image condition="contains">setspn.exe</Image>
+    </ProcessCreate>
+
+    <!-- ============================================== -->
+    <!-- Event ID 3: Network Connection                 -->
+    <!-- ============================================== -->
+    <NetworkConnect onmatch="include">
+      <DestinationPort condition="is">445</DestinationPort>
+      <DestinationPort condition="is">139</DestinationPort>
+      <DestinationPort condition="is">3389</DestinationPort>
+      <DestinationPort condition="is">5985</DestinationPort>
+      <DestinationPort condition="is">88</DestinationPort>
+    </NetworkConnect>
+
+    <!-- ============================================== -->
+    <!-- Event ID 7: Image Loaded                       -->
+    <!-- ============================================== -->
+    <ImageLoad onmatch="include">
+      <ImageLoaded condition="contains">samlib</ImageLoaded>
+      <ImageLoaded condition="contains">lsass</ImageLoaded>
+    </ImageLoad>
+
+    <!-- ============================================== -->
+    <!-- Event ID 8: CreateRemoteThread                 -->
+    <!-- ============================================== -->
+    <CreateRemoteThread onmatch="exclude">
+      <SourceImage condition="is">C:\Windows\System32\csrss.exe</SourceImage>
+      <SourceImage condition="is">C:\Windows\System32\wininit.exe</SourceImage>
+    </CreateRemoteThread>
+
+    <!-- ============================================== -->
+    <!-- Event ID 11: FileCreate                        -->
+    <!-- ============================================== -->
+    <FileCreate onmatch="include">
+      <TargetFilename condition="contains">.dmp</TargetFilename>
+      <TargetFilename condition="contains">.zip</TargetFilename>
+      <TargetFilename condition="contains">kerberoast</TargetFilename>
+    </FileCreate>
+
+    <!-- ============================================== -->
+    <!-- Event ID 13: RegistryValueSet                  -->
+    <!-- ============================================== -->
+    <RegistryEvent onmatch="include">
+      <TargetObject condition="contains">CurrentVersion\Run</TargetObject>
+      <TargetObject condition="contains">Services</TargetObject>
+    </RegistryEvent>
+
+  </EventFiltering>
+</Sysmon>
