@@ -72,3 +72,4 @@ cd Active-Directory-Simulation-Attack-
 cat docs/installation.md
 
 ### 3. Deploy the lab (follow docs/installation.md)
+Full setup: docs/installation.md
