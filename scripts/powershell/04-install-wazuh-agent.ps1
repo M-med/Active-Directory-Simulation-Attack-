@@ -1,4 +1,3 @@
-```powershell
 <#
 .SYNOPSIS
     Installs and configures the Wazuh agent on a Windows endpoint.
