@@ -25,7 +25,7 @@ This project is a **Purple Team laboratory** designed to:
 
 The lab reproduces a typical enterprise AD infrastructure and demonstrates the full attack lifecycle — from reconnaissance to domain compromise — followed by remediation and detection engineering.
 
----
+
 
 ## Architecture
 
@@ -46,7 +46,7 @@ The lab reproduces a typical enterprise AD infrastructure and demonstrates the f
 
 See [docs/architecture.md](docs/architecture.md) for full details.
 
----
+
 
 ## Technologies Used
 
@@ -116,7 +116,6 @@ Full guide: docs/installation-wazuh.md
 Med MAMOR
 - 💼 LinkedIn: linkedin.com/in/mohamed-mamor
 
----
 
 <div align="center">
 ⭐ If you found this project useful, please consider giving it a star! ⭐
