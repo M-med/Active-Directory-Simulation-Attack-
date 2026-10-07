@@ -1,0 +1,89 @@
+<!--
+  Custom Wazuh rules for detecting Kerberoasting in Active Directory.
+  MITRE ATT&CK: T1558.003
+  Event ID: 4769 (Kerberos Service Ticket Request)
+  Detection signature: TicketEncryptionType = 0x17 (RC4-HMAC)
+-->
+
+<group name="windows,kerberos,attack.kerberoasting,">
+
+  <!-- ============================================================ -->
+  <!-- Base rule: Kerberos Service Ticket Request (4769)            -->
+  <!-- ============================================================ -->
+  <rule id="100000" level="0">
+    <if_sid>60103</if_sid>
+    <field name="win.system.eventID">^4769$</field>
+    <description>Kerberos service ticket requested (base event)</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!-- Rule 100001: Kerberoasting - RC4 encryption detected         -->
+  <!-- ============================================================ -->
+  <rule id="100001" level="12">
+    <if_sid>100000</if_sid>
+    <field name="win.eventdata.ticketEncryptionType">^0x17$</field>
+    <field name="win.eventdata.serviceName" negate="yes">^krbtgt$</field>
+    <field name="win.eventdata.serviceName" negate="yes">^\$$</field>
+    <description>Possible Kerberoasting - TGS request with RC4 encryption (Event ID 4769)</description>
+    <mitre>
+      <id>T1558.003</id>
+    </mitre>
+    <group>credential_access,</group>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!-- Rule 100002: Kerberoasting - Multiple TGS requests           -->
+  <!-- ============================================================ -->
+  <rule id="100002" level="12" frequency="5" timeframe="30">
+    <if_matched_sid>100001</if_matched_sid>
+    <same_source_ip />
+    <description>Kerberoasting attack in progress - multiple RC4 TGS requests from same source</description>
+    <mitre>
+      <id>T1558.003</id>
+    </mitre>
+    <group>credential_access,</group>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!-- Rule 100003: Suspicious service account activity             -->
+  <!-- ============================================================ -->
+  <rule id="100003" level="10">
+    <if_sid>100000</if_sid>
+    <field name="win.eventdata.serviceName">svc_sql</field>
+    <description>Vulnerable service account svc_sql requested TGS ticket - potential Kerberoasting target</description>
+    <mitre>
+      <id>T1558.003</id>
+    </mitre>
+    <group>credential_access,</group>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!-- Rule 100004: Golden Ticket - krbtgt service requests          -->
+  <!-- ============================================================ -->
+  <rule id="100004" level="14">
+    <if_sid>100000</if_sid>
+    <field name="win.eventdata.serviceName">^krbtgt$</field>
+    <description>Kerberos ticket requested for krbtgt - possible Golden Ticket attack</description>
+    <mitre>
+      <id>T1558.001</id>
+    </mitre>
+    <group>credential_access,</group>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!-- Rule 100005: Pass-the-Hash detection (Event ID 4624)         -->
+  <!-- ============================================================ -->
+  <rule id="100005" level="12">
+    <if_sid>60103</if_sid>
+    <field name="win.system.eventID">^4624$</field>
+    <field name="win.eventdata.logonType">^3$</field>
+    <field name="win.eventdata.authenticationPackageName">^NTLM$</field>
+    <description>Possible Pass-the-Hash - NTLM network logon detected</description>
+    <mitre>
+      <id>T1550.002</id>
+    </mitre>
+    <group>lateral_movement,</group>
+  </rule>
+
+</group>
