@@ -13,7 +13,7 @@
 
 </div>
 
----
+
 
 ## 📋 Overview
 
@@ -60,7 +60,7 @@ See [docs/architecture.md](docs/architecture.md) for full details.
 | **Monitoring** | **Wazuh SIEM** (Manager, Indexer, Dashboard), Windows Event Logs |
 | **Scripting** | PowerShell, Bash |
 
----
+
 
 ## Quick Start
 
@@ -110,7 +110,7 @@ After simulating attacks, the lab implements:
 
 Full guide: docs/installation-wazuh.md
 
----
+
 
 # 👤 Author
 Med MAMOR
